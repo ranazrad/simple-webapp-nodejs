@@ -1,7 +1,7 @@
 FROM node:8
-WORKDIR /app
+workdir /app
 COPY . .
 RUN npm install
-USER node
+RUN npm run test
 EXPOSE 3000
 CMD ["npm", "run", "start"]
