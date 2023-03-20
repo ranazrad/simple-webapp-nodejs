@@ -35,8 +35,9 @@ pipeline {
         stage('Deploy-Test-Env') {
             steps {
                 nodejs('node8') {
-                    sh "npm run start"
-                    sleep(60)
+                    //sh "npm run start"
+                    //sleep(60)
+                    sh "echo hello world!"
                 }
                 //sh "cat README.md"
             }
