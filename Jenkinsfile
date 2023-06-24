@@ -1,37 +1,45 @@
-podTemplate(
-    label: label, 
-    containers: [
-        containerTemplate(
-            name: 'node',
-            image: 'node:18.16.1-bullseye-slim',
-            ttyEnabled: true,
-            command: 'cat'
-        )
-    ]
-  )
-
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            defaultContainer 'kaniko'
+            yaml '''
+kind: Pod
+spec:
+  containers:
+  - name: node
+    image: node:18.16.1-bullseye-slim
+    imagePullPolicy: Always
+    command:
+    - sleep
+    args:
+    - 99d 
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    imagePullPolicy: Always
+    command:
+    - sleep
+    args:
+    - 99d
+    volumeMounts:
+    - name: docker-registry-config
+      mountPath: /kaniko/.docker
+  volumes:
+    - name: docker-registry-config
+      secret:
+        secretName: docker-registry-config
+        optional: true 
+        items:
+          - key: .dockerconfigjson
+            path: config.json
+    '''
+    }
+}
     stages {
-        stage('Initialize') {
-            steps {
-                cleanWs()
-            }
-        }
-
         stage('SCM Checkout') {
             steps {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/4m3ndy/simple-webapp-nodejs']])
             }
         }
-
-        // stage('Build') {
-        //     steps {
-        //         container('node8') {
-        //             sh "docker build . -f Dockerfile -t sample-webapp-nodejs:$(git rev-parse --short HEAD)"
-        //         }
-        //     }     
-        // }
 
         stage('Test') {
             steps {
@@ -42,10 +50,12 @@ pipeline {
             }
         }
 
-        // stage('Push Artifacts'){
-        //     stage('Build') {
-        //         sh "docker push sample-webapp-nodejs:$(git rev-parse --short HEAD)"
-        //     }
-        // }
+        stage('Build & Push Artifacts'){
+          steps {
+            container('kaniko') {
+                sh "/kaniko/executor -c `pwd` --dockerfile=Dockerfile --cache=true --destination=4m3ndy/sample-webapp-nodejs:${GIT_COMMIT[0..7]}"
+            }
+          }
+        }
     }
 }
