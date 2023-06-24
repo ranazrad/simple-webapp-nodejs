@@ -8,38 +8,22 @@ pipeline {
         }
         stage('SCM Checkout') {
             steps {
-                git 'https://github.com/ranazrad/simple-webapp-nodejs.git'
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/4m3ndy/simple-webapp-nodejs']])
             }
         }
-        stage('Install') {
+
+        stage('Build') {
             steps {
-                nodejs('node8') {
-                    script {
-                        if (isUnix()) {
-                            sh "npm install"
-                        }
-                        else {
-                            bat "npm install"
-                        }
-                    }
+                docker('node8') {
+                    sh "docker build . -f Dockerfile -t sample-webapp-nodejs:"
                 }
-            }
+            }     
         }
         stage('Test') {
             steps {
                 nodejs('node8') {
                     sh "npm run test"
                 }
-            }
-        }
-        stage('Deploy-Test-Env') {
-            steps {
-                nodejs('node8') {
-                    //sh "npm run start"
-                    //sleep(60)
-                    sh "echo hello world!"
-                }
-                //sh "cat README.md"
             }
         }
     }
