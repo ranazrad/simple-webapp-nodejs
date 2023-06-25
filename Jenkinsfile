@@ -73,7 +73,7 @@ spec:
         stage('Build'){
           steps {
             container('kaniko') {
-                sh "/kaniko/executor -c `pwd` --dockerfile=Dockerfile --no-push --cache=true --destination=4m3ndy/sample-webapp-nodejs:${GIT_COMMIT[0..7]}"
+                sh "/kaniko/executor -c `pwd` --dockerfile=Dockerfile --no-push --destination=4m3ndy/sample-webapp-nodejs:${GIT_COMMIT[0..7]}"
             }
           }
         }
