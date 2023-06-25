@@ -14,7 +14,7 @@ spec:
     args:
     - 99d
   - name: kubectl
-    image: bitnami/kubectl:1.26.6-debian-11-r3
+    image: portainer/kubectl-shell:latest-v1.21.1-amd64
     imagePullPolicy: Always
     command:
     - sleep
@@ -78,7 +78,10 @@ spec:
         stage('Deploy'){
           steps {
             container('kubectl') {
-                sh "kubectl apply -R -f kubernetes"
+                sh "whoami"
+                sh "ls"
+                sh "kubectl get pods -A"
+                sh "kubectl apply -R -f ./kubernetes"
             }
           }
         }
