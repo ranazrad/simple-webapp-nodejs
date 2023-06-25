@@ -23,6 +23,9 @@ spec:
     volumeMounts:
     - name: kubeconfig
       mountPath: /.kube
+    env:
+    - name: "KUBECONFIG"
+      value: "/.kube/config"
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
     imagePullPolicy: Always
@@ -78,9 +81,6 @@ spec:
         stage('Deploy'){
           steps {
             container('kubectl') {
-                sh "whoami"
-                sh "ls"
-                sh "kubectl get pods -A"
                 sh "kubectl apply -R -f ./kubernetes"
             }
           }
