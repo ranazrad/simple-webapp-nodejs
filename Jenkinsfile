@@ -54,7 +54,7 @@ spec:
     stages {
         stage('SCM Checkout') {
             steps {
-                checkout scmGit(extensions: [], userRemoteConfigs: [[url: 'https://github.com/4m3ndy/simple-webapp-nodejs']])
+                checkout scmGit(branches: [[name: '**']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/4m3ndy/simple-webapp-nodejs']])
             }
         }
 
