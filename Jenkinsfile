@@ -12,7 +12,17 @@ spec:
     command:
     - sleep
     args:
+    - 99d
+  - name: kubectl
+    image: bitnami/kubectl:1.26.6-debian-11-r3
+    imagePullPolicy: Always
+    command:
+    - sleep
+    args:
     - 99d 
+    volumeMounts:
+    - name: kubeconfig
+      mountPath: /.kube
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
     imagePullPolicy: Always
@@ -31,6 +41,13 @@ spec:
         items:
           - key: .dockerconfigjson
             path: config.json
+    - name: kubeconfig
+      secret:
+        secretName: kubeconfig
+        optional: true 
+        items:
+          - key: config
+            path: config
     '''
     }
 }
@@ -57,5 +74,14 @@ spec:
             }
           }
         }
+
+        stage('Deploy'){
+          steps {
+            container('kubectl') {
+                sh "kubectl apply -R -f kubernetes"
+            }
+          }
+        }
+
     }
 }
