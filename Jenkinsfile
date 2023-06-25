@@ -79,12 +79,14 @@ spec:
         }
 
         stage('Deploy'){
+          when {
+            branch 'master'
+          }
           steps {
             container('kubectl') {
                 sh "kubectl apply -R -f ./kubernetes"
             }
           }
         }
-
     }
 }
