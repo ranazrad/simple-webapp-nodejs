@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: sample-webapp-nodejs
+  name: sample-webapp-nodejs
+  namespace: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sample-webapp-nodejs
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: sample-webapp-nodejs
+    spec:
+      containers:
+      - image: 4m3ndy/sample-webapp-nodejs:d1dc4fe6
+        name: sample-webapp-nodejs
+        resources: {}
+
